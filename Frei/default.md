@@ -1,4 +1,4 @@
-Hi. Welcome to Freewrite :).
+Hi. Welcome to Frei :).
 
 Plz read this guide.
 
@@ -14,7 +14,7 @@ This is not a journaling app or a note-taking app.
 If you use it for that, you’ll probably use it once or twice,
 and then never touch it again.
 
-This is a tool purely to help you freewrite.
+This is a tool purely to help you free-write.
 
 Freewriting is a writing strategy developed in 1973 — it’s where you write continuously for a set time without worrying about grammar, spelling, or anything like that. A pure stream of consciousness.
 
@@ -90,7 +90,7 @@ I know it’s a dumb little app — just a text view with some black text + a ti
 
 Lil bonus features:
 
-1. Once you finish a freewrite session, click “Chat”.
+1. Once you finish a free-write session, click "Chat".
 
 It’ll push your entry to ChatGPT or Claude via a query parameter to help you reflect. I also baked in my custom prompt I’ve been using for months. This little thing has helped me so much. AI is really good at helping make connections you might not see. I hope it helps you too.
 

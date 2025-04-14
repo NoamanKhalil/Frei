@@ -1,7 +1,7 @@
 // Swift 5.0
 //
 //  ContentView.swift
-//  freewrite
+//  Frei
 //
 //  Created by thorfinn on 2/14/25.
 //
@@ -107,13 +107,13 @@ struct ContentView: View {
     
     // Add cached documents directory
     private let documentsDirectory: URL = {
-        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Freewrite")
+        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Frei")
         
-        // Create Freewrite directory if it doesn't exist
+        // Create Frei directory if it doesn't exist
         if !FileManager.default.fileExists(atPath: directory.path) {
             do {
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-                print("Successfully created Freewrite directory")
+                print("Successfully created Frei directory")
             } catch {
                 print("Error creating directory: \(error)")
             }
@@ -291,7 +291,7 @@ struct ContentView: View {
             }
             
             // Check if we have only one entry and it's the welcome message
-            let hasOnlyWelcomeEntry = entries.count == 1 && entriesWithDates.first?.content.contains("Welcome to Freewrite.") == true
+            let hasOnlyWelcomeEntry = entries.count == 1 && entriesWithDates.first?.content.contains("Welcome to Frei.") == true
             
             if entries.isEmpty {
                 // First time user - create entry with welcome message
