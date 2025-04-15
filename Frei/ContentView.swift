@@ -84,6 +84,9 @@ struct ContentView: View {
     @State private var isHoveringHistoryArrow = false
     @State private var colorScheme: ColorScheme = .light // Add state for color scheme
     @State private var isHoveringThemeToggle = false // Add state for theme toggle hover
+    @State private var isHoveringColorToggle = false // Add state for color toggle hover
+    @State private var selectedColorIndex: Int = 0 // Add state for selected color index
+    @AppStorage("selectedColorIndex") private var storedColorIndex: Int = 0 // Persist color selection
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let entryHeight: CGFloat = 40
     
@@ -154,6 +157,10 @@ struct ContentView: View {
         // Load saved color scheme preference
         let savedScheme = UserDefaults.standard.string(forKey: "colorScheme") ?? "light"
         _colorScheme = State(initialValue: savedScheme == "dark" ? .dark : .light)
+        
+        // Load saved color index preference
+        let savedColorIndex = UserDefaults.standard.integer(forKey: "selectedColorIndex")
+        _selectedColorIndex = State(initialValue: savedColorIndex)
     }
     
     // Modify getDocumentsDirectory to use cached value
@@ -381,16 +388,41 @@ struct ContentView: View {
         return colorScheme == .light ? Color.primary : Color.white
     }
     
+    // Define color options for light mode
+    let lightModeColors: [Color] = [
+        Color.white,               // Default white
+        Color(red: 0.9, green: 1.0, blue: 0.9),  // Light green
+        Color(red: 1.0, green: 1.0, blue: 0.9),  // Light yellow
+        Color(red: 1.0, green: 0.95, blue: 0.9), // Light orange
+        Color(red: 1.0, green: 0.9, blue: 0.95), // Light pink
+        Color(red: 0.95, green: 0.9, blue: 1.0), // Light purple
+        Color(red: 0.9, green: 0.95, blue: 1.0)  // Light blue
+    ]
+    
+    // Helper computed properties to simplify the body
+    private var buttonBackground: Color {
+        return colorScheme == .light ? Color.white : Color.black
+    }
+    
+    private var textColor: Color {
+        return colorScheme == .light ? Color.gray : Color.gray.opacity(0.8)
+    }
+    
+    private var textHoverColor: Color {
+        return colorScheme == .light ? Color.black : Color.white
+    }
+    
+    private var backgroundColor: Color {
+        return colorScheme == .light ? lightModeColors[selectedColorIndex] : Color.black
+    }
+    
     var body: some View {
-        let buttonBackground = colorScheme == .light ? Color.white : Color.black
         let navHeight: CGFloat = 68
-        let textColor = colorScheme == .light ? Color.gray : Color.gray.opacity(0.8)
-        let textHoverColor = colorScheme == .light ? Color.black : Color.white
         
         HStack(spacing: 0) {
             // Main content
             ZStack {
-                Color(colorScheme == .light ? .white : .black)
+                backgroundColor
                     .ignoresSafeArea()
                 
                 TextEditor(text: Binding(
@@ -404,7 +436,7 @@ struct ContentView: View {
                         }
                     }
                 ))
-                    .background(Color(colorScheme == .light ? .white : .black))
+                    .background(backgroundColor)
                     .font(.custom(selectedFont, size: fontSize))
                     .foregroundColor(colorScheme == .light ? Color(red: 0.20, green: 0.20, blue: 0.20) : Color(red: 0.9, green: 0.9, blue: 0.9))
                     .scrollContentBackground(.hidden)
@@ -741,6 +773,33 @@ struct ContentView: View {
                                     NSCursor.pop()
                                 }
                             }
+                            
+                            // Color toggle button (only enabled in light mode)
+                            Button(action: {
+                                if colorScheme == .light {
+                                    // Cycle through available colors
+                                    selectedColorIndex = (selectedColorIndex + 1) % lightModeColors.count
+                                    storedColorIndex = selectedColorIndex
+                                }
+                            }) {
+                                Image(systemName: "paintpalette")
+                                    .foregroundColor(colorScheme == .light ? 
+                                                   (isHoveringColorToggle ? textHoverColor : textColor) : 
+                                                   Color.gray.opacity(0.5))
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(colorScheme == .dark)
+                            .opacity(colorScheme == .light ? 1.0 : 0.5)
+                            .onHover { hovering in
+                                isHoveringColorToggle = hovering
+                                isHoveringBottomNav = hovering
+                                if hovering && colorScheme == .light {
+                                    NSCursor.pointingHand.push()
+                                } else if !hovering {
+                                    NSCursor.pop()
+                                }
+                            }
+                            .help(colorScheme == .light ? "Change background color" : "Only available in light mode")
 
                             Text("•")
                                 .foregroundColor(.gray)
@@ -772,7 +831,7 @@ struct ContentView: View {
                         }
                     }
                     .padding()
-                    .background(Color(colorScheme == .light ? .white : .black))
+                    .background(backgroundColor)
                     .opacity(bottomNavOpacity)
                     .onHover { hovering in
                         isHoveringBottomNav = hovering
@@ -934,7 +993,7 @@ struct ContentView: View {
                     .scrollIndicators(.never)
                 }
                 .frame(width: 200)
-                .background(Color(colorScheme == .light ? .white : NSColor.black))
+                .background(colorScheme == .light ? lightModeColors[selectedColorIndex] : Color(NSColor.black))
             }
         }
         .frame(minWidth: 1100, minHeight: 600)
